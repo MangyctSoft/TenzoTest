@@ -1,0 +1,176 @@
+﻿<UserControl x:Class="ClientWpf.Views.TableUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:viewModels="clr-namespace:ClientWpf.ViewModels"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" 
+             d:DesignWidth="800"
+                d:DataContext="{d:DesignInstance Type=viewModels:TableViewModel, IsDesignTimeCreatable=False}">
+    <UserControl.Resources>
+        <!-- Фильтр по дате-->
+        <ControlTemplate x:Key="DateTimeFilterPopupTemplate">
+            <Border Background="Aquamarine" BorderBrush="Black" BorderThickness="2">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Фильтр по дате" Background="Gray"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Начальная дата:" Grid.Column="0" Grid.Row="0"/>
+                        <TextBlock Text="Конечная дата:" Grid.Column="1" Grid.Row="0"/>
+                        <xctk:DateTimePicker Width="160" Grid.Column="0" Grid.Row="1" 
+                                             Format="Custom" 
+                                             FormatString="MM-dd-yyyy HH:mm:ss tt"
+                                             TimeFormat="Custom"
+                                             TimeFormatString="HH:mm:ss tt" Text="{Binding DataContext.StartDate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+                        <xctk:DateTimePicker Width="160" Grid.Column="1" Grid.Row="1"
+                                             Format="Custom" 
+                                             FormatString="MM-dd-yyyy HH:mm:ss tt"
+                                             TimeFormat="Custom"
+                                             TimeFormatString="HH:mm:ss tt" Text="{Binding DataContext.EndDate, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+                    </Grid>
+                    <Button Content="Применить" Margin="2" Command="{Binding DataContext.ApplyDateFilterCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" />
+                    <Button Content="Очистить" Margin="2" Command="{Binding DataContext.RefreshDateFilterCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+                    <TextBlock Text="Примечание: формат даты МЕСЯЦ-ДЕНЬ-ГОД"/>
+                </StackPanel>
+            </Border>
+        </ControlTemplate>
+        <ControlTemplate x:Key="DateTimeFilterControlTemplate" TargetType="ContentControl">
+            <Grid Name="DateTimeFilterControl">
+                <ContentPresenter Content="{TemplateBinding Content}"/>
+                <Popup Name="DateTimeFilterPopup" StaysOpen="True" Placement="Bottom">
+                    <ContentControl Template="{StaticResource DateTimeFilterPopupTemplate}"/>
+                </Popup>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger SourceName="DateTimeFilterControl" Property="UIElement.IsMouseOver" Value="True">
+                    <Setter TargetName="DateTimeFilterPopup" Property="Popup.IsOpen" Value="True"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <!-- ./ Фильтр по дате-->
+        <!-- Фильтр по событиям -->
+        <ControlTemplate x:Key="EventFilterPopupTemplate">
+            <Border Background="Aquamarine" BorderBrush="Black" BorderThickness="2">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Фильтр по событию" Background="Gray"/>
+                    <CheckBox IsChecked="{Binding DataContext.CheckedMove, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" Content="Move"/>
+                    <CheckBox IsChecked="{Binding DataContext.CheckedLeft, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" Content="Left"/>
+                    <CheckBox IsChecked="{Binding DataContext.CheckedMiddle, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" Content="Middle"/>
+                    <CheckBox IsChecked="{Binding DataContext.CheckedRight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" Content="Right"/>
+                    <Button Content="Применить" Margin="2" Command="{Binding DataContext.ApplyEventFilterCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}" />
+                    <Button Content="Очистить" Margin="2" Command="{Binding DataContext.RefreshEventFilterCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}}"/>
+                </StackPanel>
+            </Border>
+        </ControlTemplate>
+        <ControlTemplate x:Key="EventFilterControlTemplate" TargetType="ContentControl">
+            <Grid Name="EventFilterControl">
+                <ContentPresenter Content="{TemplateBinding Content}"/>
+                <Popup Name="EventFilterPopup" StaysOpen="True" Placement="Bottom">
+                    <ContentControl Template="{StaticResource EventFilterPopupTemplate}"/>
+                </Popup>
+            </Grid>
+            <ControlTemplate.Triggers>
+                <Trigger SourceName="EventFilterControl" Property="UIElement.IsMouseOver" Value="True">
+                    <Setter TargetName="EventFilterPopup" Property="Popup.IsOpen" Value="True"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+        <!-- ./Фильтр по событиям -->
+        
+    </UserControl.Resources>
+    <Grid>        
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Top" Margin="2">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="42"/>
+                    </Grid.RowDefinitions>
+                    <Button Content="В начало" Grid.Column="0" Margin="2" Command="{Binding ToFirstPageCommand}"/>
+                    <Button Content="Назад" Grid.Column="1" Margin="2" Command="{Binding PreviousPageCommand}"/>
+                    <DockPanel Grid.Column="2" Grid.ColumnSpan="3">
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center" >
+                            <TextBlock Text="Период: "/>
+                            <TextBlock Text="{Binding StartDate, StringFormat=\{0:dd.MM.yy HH:mm:ss\}}"/>
+                            <TextBlock Text=" - "/>
+                            <TextBlock Text="{Binding EndDate, StringFormat=\{0:dd.MM.yy HH:mm:ss\}}"/>
+                        </StackPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="Страница: "/>
+                            <TextBlock Text="{Binding PageIndex}"/>
+                            <TextBlock Text=" / Строки: "/>
+                            <TextBlock Text="{Binding PageNumber}"/>
+                            <TextBlock Text=" - "/>
+                            <TextBlock Text="{Binding PageEnd}"/>
+                            <TextBlock Text=" / Всего записей: "/>
+                            <TextBlock Text="{Binding TotalRows}"/>
+                        </StackPanel>
+                    </DockPanel>
+                    <Button Content="Вперед" Grid.Column="5" Margin="2" Command="{Binding NextPageCommand}"/>
+                    <Button Content="В конец" Grid.Column="6" Margin="2" Command="{Binding ToEndPageCommand}"/>
+                </Grid>
+            </StackPanel>
+            <DataGrid AutoGenerateColumns="False" HorizontalGridLinesBrush="DarkGray" IsReadOnly="True"
+                        RowBackground="LightGray" AlternatingRowBackground="White" 
+                        Margin="2" HorizontalAlignment="Center" ItemsSource="{Binding PositionTable}">
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding}" Value="Дата">
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Margin="10,0,6,0"  Text="{Binding}"/>
+                                                <ContentControl Template="{StaticResource DateTimeFilterControlTemplate}">
+                                                    <Button Width="16" Height="16" Content=" f "/>
+                                                </ContentControl>                                                
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding}" Value="Событие">
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Margin="10,0,6,0"  Text="{Binding}"/>
+                                                <ContentControl Template="{StaticResource EventFilterControlTemplate}">
+                                                    <Button Width="16" Height="16" Content=" f "/>
+                                                </ContentControl>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>     
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Дата" Binding="{Binding CreatedAt, StringFormat=\{0:dd.MM.yy HH:mm:ss.fff\}}" MinWidth="150"  CanUserSort="False"/>
+                    <DataGridTextColumn Header="Событие" Binding="{Binding Event}" MinWidth="100"  CanUserSort="False"/>
+                    <DataGridTextColumn Header="Позиция" Binding="{Binding Points}" MinWidth="150" CanUserSort="False"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+
+    </Grid>
+</UserControl>
